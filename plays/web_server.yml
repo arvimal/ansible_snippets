@@ -1,0 +1,45 @@
+---
+- name: Enable Web server
+  hosts: host1
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Install packages
+      dnf:
+        state: present
+        name:
+          - httpd
+          - firewalld
+    - name: Create a welcome page
+      copy:
+        content: "Welcome to the webserver\n"
+        dest: /var/www/html/index.html
+
+    - name: Enable web server
+      service:
+        name: httpd
+        enabled: yes
+        state: started
+
+    - name: Enable firewalld 
+      service:
+        name: firewalld
+        enabled: yes
+        state: started
+
+    - name: Open network ports in firewall
+      firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: yes
+
+- name: Test webserver access
+  hosts: localhost
+  become: no
+  tasks:
+    - name: Testing 
+      uri:
+        url: http://host1
+        return_content: yes
+        status_code: 200

@@ -1,0 +1,30 @@
+---
+- name: Configure CentOS hosts
+  hosts: host2
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Upgrade packages
+      dnf:
+        state: latest
+        name: "*"
+
+    - name: Remove packages
+      dnf:
+        state: absent
+        name:
+          - bind
+          - autofs
+
+    - name: Install packages
+      dnf:
+        state: present
+        name:
+          - bind
+          - autofs
+
+    - name: Ensure system services
+      service:
+        name: named
+        state: started
+        enabled: yes
