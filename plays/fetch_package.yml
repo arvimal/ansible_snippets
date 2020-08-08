@@ -1,0 +1,12 @@
+---
+- name: Gather package information from hosts
+  hosts: all
+  tasks:
+  - name: Fetch
+    package_facts:
+      manager: rpm
+    register: pack_list
+
+  - name: Return package list
+    debug:
+      var: pack_list  
