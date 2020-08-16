@@ -1,0 +1,31 @@
+---
+- name: Check disk space using Ansible facts
+  hosts: host1
+  gather_facts: yes
+  tasks:
+
+  - name: Check if the available disk space is less than 15%
+    assert:
+      that: item.size_available < item.size_total|float * 0.15
+      msg: "Available disk space less than 15%"
+    when: item.mount == '/'
+    with_items: "{{ ansible_mounts }}"
+
+
+
+  #- name: Disk stats 
+  #  command: df -h /dev/mapper/cl-root --output=avail -BM
+  #  register: disk_stat
+
+  #- debug:
+      #var: disk_stat.stdout_lines[1] 
+      #var: disk_stat.stdout_lines[1].split('M')[1] 
+
+  #- fail:
+  #    when: disk_stat.stdout_lines[1]|int < 12462M
+
+    
+#  - debug: 
+#      msg: "Mount point {{ item.mount }} free space: {{ item.size_available }}"
+#    when: item.device == '/dev/mapper/cl-root' #and item.size_available < 1038336
+#    loop: "{{ ansible_mounts }}"
