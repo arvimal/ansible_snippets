@@ -1,0 +1,21 @@
+---
+- name: Generate version lock on rpmdb
+  hosts: centos8-k8-master
+  gather_facts: yes
+  tasks:
+    - name: Install python3-dnf-plugin-versionlock.noarch
+      dnf:
+        name: python3-dnf-plugin-versionlock
+        state: present
+
+    - name: versionlock generation
+      shell: dnf versionlock "*"; sort -t ":" -k1 /etc/yum/pluginconf.d/versionlock.list > /tmp/versionlock.txt
+      register: versionlock_output
+
+    - name: "DEBUG_OUTPUT: versionlock_output"
+      debug:
+        var: versionlock_output
+
+    - name: "Cleanup dnf versionlock"
+      command: dnf versionlock clear
+...
